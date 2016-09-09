@@ -5,11 +5,20 @@ update_interval 1
 total_run_times 0
 use_spacer none
 
+#   ${hwmon 2 temp 1} | ${hwmon 2 temp 3}     \
 
 TEXT
 ${if_mpd_playing}${mpd_artist} - ${mpd_title}${endif}     \
    ${downspeedf wlp1s0} | ${upspeedf wlp1s0}     \
-   ${hwmon 2 temp 1} | ${hwmon 2 temp 3}     \
+  ${wireless_link_qual_perc wlp1s0}  ${wireless_essid wlp1s0}     \
   ${exec amixer get Master -c 0 -M | grep -oE "[[:digit:]]*%"}     \
   ${time %a %b %d}     \
-  ${time %H:%M}   
+  ${time %H:%M}   \
+${exec curl localhost:5000}
+
+
+#Full: 
+# 3/4: 
+#Half: 
+# 1/4: 
+#Empty 
