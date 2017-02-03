@@ -1,0 +1,322 @@
+;=====================================================
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/jaagr/polybar
+;
+;   The README contains alot of information
+;
+;=====================================================
+
+[colors]
+transparent = #00000000
+background = #2f343f
+foreground = #ebdbb2
+dgrey = #928374
+dred = #c9415c
+red = #fb4934
+green = #628579
+dgreen = #98971a
+dyellow = #d79921
+dblue = #3b3864
+blue = #416f83
+dmagenta = #b16286
+magenta = #d3869b
+dcyan = #689d6a
+cyan = #8ec07c
+lgrey = #a89984
+white = #ebdbb2
+tred = #843c60
+tblue = #3f6981
+tgreen = #b8bb26
+golden = #ea8662
+dgolden = #ffb562
+tmagenta = #deb1be
+mint = #9abfa4
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+[bar/top]
+monitor = ${env:MONITOR:HDMI-0}
+width = 100%
+height = 36
+offset-x = 0
+offset-y = 0
+
+bottom = true
+
+locale = en_US.UTF-8
+
+background = ${colors.transparent}
+foreground = ${colors.foreground}
+
+font-0 = Roboto:size=10:fontformat=truetype
+font-1 = FontAwesome:size=10;0
+
+modules-left = i3 xwindow updates
+modules-center = 
+modules-right = spotify mediaplayer backlight volumeintel volumeasus nvidia-temp coretemps cpu memory battery date
+
+tray-position = right
+tray-padding = 2
+tray-background = ${colors.background}
+tray-transparent = true
+
+underline-size = 3
+
+spacing = 1
+padding-left = 0
+padding-right = 2
+module-margin-left = 2
+module-margin-right = 2
+
+[module/xwindow]
+type = internal/xwindow
+label = "    %title:0:30:...%    "
+format-underline = ${colors.blue}
+format-background = ${colors.dblue}
+
+[module/i3]
+foreground = ${colors.dblue}
+type = internal/i3
+strip-wsnumbers = true
+
+ws-icon-0 = 1
+ws-icon-1 = 2
+ws-icon-2 = 3
+ws-icon-3 = 4
+ws-icon-4 = 5
+
+format = <label-state> <label-mode>
+
+label-mode-foreground = ${colors.dblue}
+label-mode-background = ${colors.dyellow}
+label-mode-padding = 1
+
+label-focused-underline = ${colors.tred}
+label-focused-background = ${colors.dred}
+label-focused-padding = 1
+
+label-unfocused-padding = 1
+
+label-urgent-background = ${colors.tred}
+label-urgent-underline = ${colors.dred}
+label-urgent-padding = 1
+
+label-visible-underline = ${colors.dgolden}
+label-visible-background = ${colors.golden}
+label-visible-padding = 1
+
+[module/windows]
+type = custom/script
+exec = $HOME/bin/window-list.sh
+interval = 1
+label =   %output%
+format-underline = ${colors.blue}
+format-padding = 2
+format-background = ${colors.dblue}
+
+[module/updates]
+type = custom/script
+exec = python $HOME/bin/updates.py
+interval = 120
+format-padding = 2
+click-left = urxvt -e update
+format-underline = ${colors.tred}
+format-background = ${colors.dred}
+;format-foreground = ${colors.background}
+;format-background = ${colors.red}
+
+[module/backlight]
+type = internal/backlight
+card = intel_backlight
+format = <label>
+format-background = ${colors.golden}
+format-underline = ${colors.dyellow}
+format-padding = 2
+label =   %percentage%
+
+[module/spotify]
+type = custom/script
+exec = BLOCK_INSTANCE=spotify $HOME/bin/spotify.sh
+label =   %output:0:30:...%
+format-background = ${colors.green}
+format-underline = ${colors.tgreen}
+format-padding = 2
+interval = 5
+exec-if = pgrep -x spotify
+
+[module/mediaplayer]
+type = custom/script
+exec = BLOCK_INSTANCE=DeaDBeeF $HOME/.bin/mediaplayer
+label =   %output:0:30:...%
+
+format-underline = ${colors.dblue}
+format-padding = 2
+interval = 5
+format-background = ${colors.background}
+exec-if = pgrep deadbeef
+
+[module/volumeintel]
+type = internal/volume
+format-volume = <ramp-volume> <label-volume>
+master-mixer = Master
+label-muted =  muted
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+format-volume-underline = ${colors.dgolden}
+format-volume-padding = 2
+mapping = true
+format-volume-background = ${colors.golden}
+
+[module/volumeasus]
+type = internal/volume
+format-volume = <label-volume>
+master-mixer = PCM
+label-muted =  muted
+
+label-volume =  %percentage%
+format-volume-underline = ${colors.dgreen}
+format-volume-padding = 2
+mapping = true
+format-volume-background = ${colors.mint}
+
+[module/temperature]
+type = custom/script
+exec = $HOME/.bin/temperature.sh
+interval = 10
+label =   %output%
+format-underline = ${colors.dred}
+format-padding = 2
+format-background = ${colors.tred}
+
+[module/coretemps]
+type = custom/script
+exec-if = sensors
+exec = sensors | grep Core | awk '{print substr($3, 2, length($3)-5)}' | tr '\n' ' ' | sed 's/ /°C  /g' | sed 's/  $//'
+format-prefix = " "
+format-underline = ${colors.dred}
+format-background = ${colors.tred}
+format-padding = 2
+
+[module/date]
+type = internal/date
+interval = 2
+
+date = "  %d.%m.%Y"
+date-alt = "  %A, %d. %B"
+
+time = "%H:%M"
+time-alt = "%H:%M:%S"
+
+format-padding = 2
+label = "%{A3:gsimplecal:}%date% | %time%%{A}"
+
+format-underline = ${colors.blue}
+format-background = ${colors.dblue}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+full-at = 99
+
+format-charging = <animation-charging> <label-charging>
+
+format-discharging = <ramp-capacity> <label-discharging>
+label-discharging = %percentage% (%time%)
+
+format-full-prefix = "  "
+format-underline = ${colors.dblue}
+format-padding = 2
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-framerate = 750
+
+format-background = ${colors.background}
+
+[module/memory]
+type = internal/memory
+interval = 2
+format = <label> 
+;<bar-used>
+
+; Available tokens:
+; ;   %percentage_used% (default)
+; ;   %percentage_free%
+; ;   %gb_used%
+; ;   %gb_free%
+; ;   %gb_total%
+; ;   %mb_used%
+; ;   %mb_free%
+; ;   %mb_total%
+label = "   %gb_used%/%gb_total% "
+;
+; Only applies if <bar-used> is used
+bar-used-indicator =
+bar-used-width = 12
+bar-used-foreground-0 = #55aa55
+bar-used-foreground-1 = #557755
+bar-used-foreground-2 = #f5a70a
+bar-used-foreground-3 = #ff5555
+bar-used-fill = ▐
+bar-used-empty = ▐
+bar-used-empty-foreground = #444444
+#format-background = ${colors.green}
+#format-underline = ${colors.tgreen}
+format-underline = ${colors.dred}
+format-background = ${colors.tred}
+
+[module/cpu]
+type = internal/cpu
+interval = 0.5
+; Available tags:
+; ;   <label> (default)
+; ;   <bar-load>
+; ;   <ramp-load>
+; ;   <ramp-coreload>
+format = "<ramp-coreload>  "
+;
+; ; Available tokens:
+; ;   %percentage% (default) - total cpu load
+; ;   %percentage-cores% - load percentage for each core
+; ;   %percentage-core[1-9]% - load percentage for specific core
+format-prefix ="  "
+;" " 
+label = " %percentage:3%%  "
+ramp-coreload-0 = ▁
+ramp-coreload-1 = ▂
+ramp-coreload-2 = ▃
+ramp-coreload-3 = ▄
+ramp-coreload-4 = ▅
+ramp-coreload-5 = ▆
+ramp-coreload-6 = ▇
+ramp-coreload-7 = █
+format-underline = ${colors.dred}
+format-background = ${colors.tred}
+label-cpu-font = Roboto:size=10:fontformat=truetype
+
+[module/nvidia-temp]
+type = custom/script
+exec = $HOME/bin/nvidia-temp.sh
+interval = 2
+format-prefix = " "
+label = %output%
+format-underline = ${colors.dred}
+format-padding = 2
+format-background = ${colors.tred}
+
+; vim:ft=dosini
